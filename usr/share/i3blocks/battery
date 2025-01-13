@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+#
+# Copyright 2014 Pierre Mavro <deimos@deimos.fr>
+# Copyright 2014 Vivien Didelot <vivien@didelot.org>
+#
+# Licensed under the terms of the GNU GPL v3, or any later version.
+#
+# This script is meant to use with i3blocks. It parses the output of the "acpi"
+# command (often provided by a package of the same name) to read the status of
+# the battery, and eventually its remaining time (to full charge or discharge).
+#
+# The color will gradually change for a percentage below 85%, and the urgency
+# (exit code 33) is set if there is less that 5% remaining.
+
+import psutil
+
+def convert_time(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+
+    return "%dh:%02dm" % (hours, minutes)
+
+battery = psutil.sensors_battery()
+if (battery.power_plugged):
+    charging = True
+else:
+    charging = False
+
+percent = battery.percent
+time = convert_time(battery.secsleft)
+
+if (charging == False):
+    print("🔋 {}% 🕑 {}".format(percent, time))
+else:
+    print("⚡ {}%".format(percent))
+
+# print short text
+print("battery")
+
+# consider color and urgent flag only on discharge
+if (charging == False):
+    if (percent >= 20 and percent < 40):
+        print("#FFAE00")
+    elif (percent >= 40 and percent < 85):
+        print("#FFF600")
+    elif (percent >= 85):
+        print("#A8FF00")
+    else:
+        print("#FF0000")
+        exit(0)
+else:
+    print("#A8FF00")
+
+exit(0);

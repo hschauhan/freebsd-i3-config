@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+mute=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d ':' -f 2)
+if [ $mute = "no" ];
+then
+    mute=$(printf "\U0001F50A")
+else
+    mute=$(printf "\U0001F507")
+fi
+vol=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -e "^Volume" | cut -d '/' -f 2 | sed -e 's/\ //g')
+
+echo "$mute $vol"

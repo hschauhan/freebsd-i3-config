@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+get_brightness() {
+    val=$(backlight | cut -d ':' -f 2 | sed 's/\ //g')
+    echo ${val%.*}"%"
+}
+
+get_brightness
