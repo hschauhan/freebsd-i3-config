@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import psutil
+
+def print_usage_bars():
+    cpu_util = psutil.cpu_percent(interval=0.5, percpu=False)
+    nr_bars = int((cpu_util * 10.)/100.0) + 1
+
+    oc="orange"
+    gc="green"
+    rc="red"
+    for i in range(10):
+        if (i < nr_bars):
+            print("|", end='')
+        else:
+            print(" ", end='')
+
+    print("\n")
+    if (nr_bars <= 4):
+        print("#61ff33")
+    elif (nr_bars > 4 and nr_bars <= 7):
+        print("#fff933")
+    else:
+        print("#ff4b33")
+
+if __name__ == "__main__":
+    print_usage_bars()
+

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+MONITOR=HDMI-1
+LAPTOP=eDP-1
+DP1_MONITOR=DP-1
+DP2_MONITOR=DP-2
+
+case $1 in
+    both)
+	echo "Configuring both the displays..."
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $MONITOR --noprimary --auto --above $LAPTOP
+	;;
+    laptop)
+	echo "Configuring only laptop screen..."
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $MONITOR --off
+	xrandr --output $DP1_MONITOR --off
+	xrandr --output $DP2_MONITOR --off
+	;;
+    monitor)
+	echo "Configuring only monitor..."
+	xrandr --output $LAPTOP --off
+	xrandr --output $MONITOR --primary --auto
+	;;
+    dp1-only)
+	echo "Configuring only dp1..."
+	xrandr --output $DP1_MONITOR --primary --auto
+	xrandr --output $LAPTOP --off
+	;;
+    dp1-above)
+	echo "Configuring display port 1"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $DP1_MONITOR --noprimary --auto --above $LAPTOP
+	;;
+    dp1-right)
+	echo "Configuring display port 1 on right"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $DP1_MONITOR --noprimary --auto --right-of $LAPTOP
+	;;
+    dp1-left)
+	echo "Configuring display port 1 on right"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $DP1_MONITOR --noprimary --auto --left-of $LAPTOP
+	;;	
+    dp2)
+	echo "Configuring display port 2"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $DP2_MONITOR --noprimary --auto --right-of $LAPTOP
+	;;
+    all)
+	echo "Configuring all displays"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $MONITOR --noprimary --auto --above $LAPTOP
+	xrandr --output $DP1_MONITOR --noprimary --auto --right-of $LAPTOP
+	xrandr --output $DP2_MONITOR --noprimary --auto --left-of $LAPTOP
+	;;
+    *)
+	echo "switchdisplay: default config"
+	xrandr --output $LAPTOP --primary --auto
+	xrandr --output $MONITOR --off
+	xrandr --output $FIRST_PORTABLE_MONITOR --off
+	xrandr --output $SECOND_PORTABLE_MONITOR --off
+	;;
+esac

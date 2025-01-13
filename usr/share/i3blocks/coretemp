@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+coretemp=$(sudo sysctl -a | grep dev.cpu | grep temper | cut -d ':' -f 2 | cut -d '.' -f 1 | sed -e 's/\ //g' |  awk '{sum += $1; n++ } END { if (n > 0) print int(sum/n); }')
+
+echo $coretemp"°C"
+echo "coretemp"
+if [ $coretemp -le 60 ]; then
+    echo "#85ff33"
+elif [ [ $coretemp -gt 60 ] && [ coretemp -lt 75 ] ]; then
+    echo "#ff9033"
+else
+    echo "#ff3333"
+fi
+

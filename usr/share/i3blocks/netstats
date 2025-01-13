@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+PRESTATFILE=/tmp/st_pnetstat
+#IF=wlp0s20f3
+IF=$(route show 8.8.8.8 | grep interface: | cut -d ':' -f 2 | sed -e 's/\ //g')
+TYPE=$(echo $IF | grep -e "^wlan*")
+
+if [ -z $TYPE ];
+then
+    ICON=$(printf "🖧")
+else
+    ICON=$(printf "🛜")
+fi
+
+if [ ! -e $PRESTATFILE ];
+then
+    RXPREV=-1
+    TXPREV=-1
+else
+    RXPREV=$(cat $PRESTATFILE | cut -d ':' -f 1)
+    TXPREV=$(cat $PRESTATFILE | cut -d ':' -f 2)
+fi
+
+NETIO=$(netstat -ib | grep $IF | awk 'NR==1 { print $8":"$11 }')
+RX=$(echo $NETIO | cut -f 1 -d ':')
+TX=$(echo $NETIO | cut -f 2 -d ':')
+
+if [ $RXPREV -ne -1 ] ; then
+        let BWRX=$RX-$RXPREV
+        let BWTX=$TX-$TXPREV
+	awk -v bwrx=$BWRX -v bwtx=$BWTX -v icon=$ICON 'BEGIN {
+		cbwrx=bwrx/1024.0; cbwtx=bwtx/1024.0; 
+		rxu="Ki"; txu="Ki";
+		if (cbwrx > 1024.0) {
+		       cbwrx=cbwrx/1024.0;
+		       rxu="Mi";
+		}
+	        if (cbwtx > 1024.0) {
+		       cbwtx = cbwtx/1024.0;
+		       txu="Mi";
+		}
+		cbwrx = cbwrx;
+		cbwtx = cbwtx;
+		printf "%s %0.0f%sB/s ↕ %0.0f%sB/s\n", icon, cbwrx, rxu, cbwtx, txu}'
+fi
+
+RXPREV=$RX
+TXPREV=$TX
+
+echo "$RXPREV:$TXPREV" > $PRESTATFILE
+echo "netstats"
+echo "#e99d4f"
